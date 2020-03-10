@@ -1,4 +1,4 @@
-module kickico
+module bsrv-test-kickico
 
 go 1.14
 
