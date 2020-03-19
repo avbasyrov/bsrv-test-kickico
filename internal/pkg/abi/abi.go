@@ -8,10 +8,44 @@ import (
 	"strings"
 )
 
-func GetFunctions(jsonABI []byte) ([]Function, error) {
+type ABI struct {
+	jsonABI   []byte
+	abi       []jsonItem
+	functions []Function
+}
+
+func New(jsonABI []byte) (*ABI, error) {
+	parsedABI, err := unmarshal(jsonABI)
+
+	return &ABI{
+		jsonABI: jsonABI,
+		abi:     parsedABI,
+	}, err
+}
+
+func (a *ABI) GetFunctionByName(name string) (*Function, error) {
+	functions, err := a.GetFunctions()
+	if err != nil {
+		return nil, err
+	}
+
+	for _, f := range functions {
+		if f.Name == name {
+			return &f, nil
+		}
+	}
+
+	return nil, nil
+}
+
+func (a *ABI) GetFunctions() ([]Function, error) {
+	if len(a.functions) != 0 {
+		return a.functions, nil
+	}
+
 	var f []Function
 
-	items, err := unmarshal(jsonABI)
+	items, err := unmarshal(a.jsonABI)
 	if err != nil {
 		return f, err
 	}
@@ -27,13 +61,16 @@ func GetFunctions(jsonABI []byte) ([]Function, error) {
 		}
 
 		f = append(f, Function{
-			Name:      item.Name,
-			Signature: signature,
-			Hash:      getFunctionHash(item.Name, item.Inputs),
+			Name:        item.Name,
+			Signature:   signature,
+			Hash:        getFunctionHash(item.Name, item.Inputs),
+			ParamsCount: len(item.Inputs),
 		})
 	}
 
-	return f, nil
+	a.functions = f
+
+	return a.functions, nil
 }
 
 func getFunctionHash(name string, arguments []jsonParam) struct {

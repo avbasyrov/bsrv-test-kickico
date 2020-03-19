@@ -6,6 +6,7 @@ type Function struct {
 		Short     string
 		Signature string
 	}
-	Name      string
-	Signature string
+	Name        string
+	Signature   string
+	ParamsCount int
 }

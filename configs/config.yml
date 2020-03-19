@@ -1,1 +1,5 @@
 abiFile: kickico.abi
+address: 0x27695e09149adc738a978e9a678f99e4c39e9eb9
+infura:
+  project_id: f02f155f332e4dde95e6b4ed808013cd
+  private_key: b1d1ffadffed4c48adad6ace7965bd9a
